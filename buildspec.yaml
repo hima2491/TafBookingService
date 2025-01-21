@@ -4,6 +4,11 @@ phases:
   pre_build:
     commands:
       - echo Starting pre-build phase...
+      - echo Logging in to Docker Hub...
+      - DOCKER_PASSWORD=hima2491
+      - DOCKER_USERNAME=Chindu@3124
+      - echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
+
       - chmod +x ./gradlew # Ensure gradlew is executable
       - ./gradlew clean build -x test # Build the project while skipping tests
       - echo Logging in to Amazon ECR...
@@ -26,7 +31,7 @@ phases:
       - echo Writing image definitions file...
       - printf '[{"name":"course-service","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
       - echo Writing image definitions file...
-      # add your container name
+      # Add your container name
       - DOCKER_CONTAINER_NAME=taf-bookingservice-repo
       - printf '[{"name":"%s","imageUri":"%s"}]' $DOCKER_CONTAINER_NAME $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
       - echo $DOCKER_CONTAINER_NAME
