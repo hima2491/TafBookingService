@@ -4,16 +4,11 @@ phases:
   pre_build:
     commands:
       - echo Starting pre-build phase...
-      - echo Logging in to Docker Hub...
-      - DOCKER_PASSWORD=hima2491
-      - DOCKER_USERNAME=Chindu@3124
-      - echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
-
       - chmod +x ./gradlew # Ensure gradlew is executable
       - ./gradlew clean build -x test # Build the project while skipping tests
       - echo Logging in to Amazon ECR...
       - REPOSITORY_URI=975049944894.dkr.ecr.us-east-1.amazonaws.com/taf-bookingservice-repo
-      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $REPOSITORY_URI
+      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin  $REPOSITORY_URI
       - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
       - IMAGE_TAG=build-$(echo $CODEBUILD_BUILD_ID | awk -F":" '{print $2}')
   build:
@@ -31,7 +26,7 @@ phases:
       - echo Writing image definitions file...
       - printf '[{"name":"course-service","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
       - echo Writing image definitions file...
-      # Add your container name
+      # add your container name
       - DOCKER_CONTAINER_NAME=taf-bookingservice-repo
       - printf '[{"name":"%s","imageUri":"%s"}]' $DOCKER_CONTAINER_NAME $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
       - echo $DOCKER_CONTAINER_NAME
